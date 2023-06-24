@@ -2,42 +2,55 @@
 pragma solidity ^0.8.9;
 
 import "forge-std/Test.sol";
+import "@et/contracts/Test.sol";
 import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import "../contracts/Treasury.sol";
 import "../contracts/Token.sol";
 
 contract TreasuryTest is Test {
-    address public constant uAdmin = 0x00000000000000000000000000000000000aD814;
-    address public constant uOperator = 0x0000000000000000000000006F70657261746F72;
-    address public constant uWithdrawer = 0x0000000000000000000077697468647261776572;
-    address public constant uNobody = 0x000000000000000000000000000000000000b1c8;
+    // Test Utils
+    User u;
 
+    // Contracts under Test
     Token token;
     Treasury treasury;
 
     function setUp() public {
-        vm.startPrank(uAdmin);
+        u = new User();
+        vm.startPrank(u.Admin());
         treasury = Treasury(address(new ERC1967Proxy(address(new Treasury()), "")));
-        treasury.initialize(uAdmin);
-        treasury.grantRole(treasury.MANAGER_ROLE(), uAdmin);
-        treasury.grantRole(treasury.OPERATOR_ROLE(), uOperator);
+        treasury.initialize(u.Admin());
+        treasury.grantRole(treasury.MANAGER_ROLE(), u.Manager());
         token = Token(address(new ERC1967Proxy(address(new Token()), "")));
-        token.initialize(uAdmin, address(treasury));
+        token.initialize(u.Admin(), address(treasury));
+        vm.stopPrank();
+
+        vm.startPrank(u.Manager());
+        treasury.grantRole(treasury.OPERATOR_ROLE(), u.Operator());
         vm.stopPrank();
     }
 
-    function test_approve_HappyCase() public {
-        vm.startPrank(uOperator);
-        treasury.approve(treasury.OP_BONDS(), address(token), uWithdrawer, 1337);
+    ////// UNIT TESTS //////
+
+    /// HAPPY CASE ///
+
+    function test_approve_HappyCase() external {
+        vm.startPrank(u.Operator());
+        treasury.approve(treasury.OP_BONDS(), address(token), u.Withdrawer(), 1337);
         vm.stopPrank();
     }
 
-    function test_withdraw_HappyCase() public {
-        vm.startPrank(uOperator);
-        treasury.approve(treasury.OP_BONDS(), address(token), uWithdrawer, 1337);
+    function test_withdraw_HappyCase() external {
+        vm.startPrank(u.Operator());
+        treasury.approve(treasury.OP_BONDS(), address(token), u.Withdrawer(), 1337);
         vm.stopPrank();
-        vm.startPrank(uWithdrawer);
+        vm.startPrank(u.Withdrawer());
         treasury.withdraw(treasury.OP_BONDS(), address(token), 1337);
         vm.stopPrank();
     }
+
+    ////// INVARIANTS //////
+
+    ////// FUZZING //////
+
 }
