@@ -1,0 +1,32 @@
+node ➜ /workspaces/Hydranet/token (master) $ npx hardhat run scripts/dao-sync.ts  --network  arbitrumOne
+Synced address for previously unknown MultiSig 'External-MultiSig-Admin' on chain with ID 42161: 0xC5888C4C261a1C5e8745EB1977eb54FcB21d2A28
+node ➜ /workspaces/Hydranet/token (master) $ npx hardhat deploy --tags token --network arbitrumOne
+Nothing to compile
+No need to generate any newer typings.
+2023-06-24 00:32:23.073 INFO    /tools/et/wallets.ts:53 deploy:Token    Using ADMIN MultiSig as ADMIN {
+  address: '0xC5888C4C261a1C5e8745EB1977eb54FcB21d2A28'
+}
+2023-06-24 00:32:23.075 INFO    /tools/et/wallets.ts:57 deploy:Token    Using ADMIN MultiSig as UPGRADER {
+  address: '0xC5888C4C261a1C5e8745EB1977eb54FcB21d2A28'
+}
+2023-06-24 00:32:34.194 INFO    /tools/et/deploy.ts:83  deploy:Token    Implementation deployed to 0xD5D57d06E66F605ed22aaa8B726ADb29B5D77016
+2023-06-24 00:32:34.196 INFO    /tools/et/deploy.ts:84  deploy:Token    Proxy deployed to 0x3404149e9EE6f17Fb41DB1Ce593ee48FBDcD9506
+Verifying implementation: 0xD5D57d06E66F605ed22aaa8B726ADb29B5D77016
+Nothing to compile
+No need to generate any newer typings.
+Successfully submitted source code for contract
+contracts/Token.sol:Token at 0xD5D57d06E66F605ed22aaa8B726ADb29B5D77016
+for verification on the block explorer. Waiting for verification result...
+
+Successfully verified contract Token on Etherscan.
+https://arbiscan.io/address/0xD5D57d06E66F605ed22aaa8B726ADb29B5D77016#code
+Verifying proxy: 0x3404149e9EE6f17Fb41DB1Ce593ee48FBDcD9506
+Contract at 0x3404149e9EE6f17Fb41DB1Ce593ee48FBDcD9506 already verified.
+Linking proxy 0x3404149e9EE6f17Fb41DB1Ce593ee48FBDcD9506 with implementation
+Successfully linked proxy to implementation.
+
+Proxy fully verified.
+2023-06-24 00:32:55.523 INFO    /tools/et/deploy.ts:41  deploy:Token    Contract changed, running deployment script
+2023-06-24 00:32:55.539 INFO    /tools/et/deploy.ts:46  deploy:Token    Contract supports RBAC interface, configuring admin permissions
+2023-06-24 00:32:55.543 INFO    /tools/et/deploy.ts:49  deploy:Token    Finished configuring RBAC
+2023-06-24 00:32:55.543 INFO    /deploy/000_deploy_token.ts:26  deploy:Token    Contract changed, running deployment script
