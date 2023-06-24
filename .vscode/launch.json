@@ -1,0 +1,99 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Hardhat TEST",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/hardhat",
+            "args": ["test", "--network", "hardhat"],
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Hardhat TEST tenderly",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/hardhat",
+            "args": ["test", "--network", "tenderly"],
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Hardhat DEPLOY",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/hardhat",
+            "args": ["deploy", "--network", "hardhat"],
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Hardhat DEPLOY tenderly",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/hardhat",
+            "args": ["deploy", "--network", "tenderly"],
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Hardhat DEPLOY tenderly TESTNET tags",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/hardhat",
+            "args": ["deploy", "--network", "tenderly", "--tags", "testnet"],
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Hardhat DEPLOY arbitrumGoerli",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/hardhat",
+            "args": ["deploy", "--network", "arbitrumGoerli"],
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Hardhat RUN ${file} tenderly",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/hardhat",
+            "args": ["run", "${file}", "--network", "tenderly"],
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Hardhat RUN dao-sync arbitrumGoerli",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/hardhat",
+            "args": ["run", "scripts/dao-sync.ts", "--network", "arbitrumGoerli"],
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "wagmi generate",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "runtimeExecutable": "${workspaceFolder}/webapp/node_modules/.bin/wagmi",
+            "cwd": "${workspaceFolder}/webapp",
+            "args": ["generate"],
+        },
+    ]
+}

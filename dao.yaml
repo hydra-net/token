@@ -1,0 +1,11 @@
+multisigs:
+  - key: "External-MultiSig-Admin"
+    org: "Hydranet"
+    team: "DAO"
+    accounts:
+      - chainId: 42161 # Arbitrum One (MAINNET)
+        address: "0xC5888C4C261a1C5e8745EB1977eb54FcB21d2A28"
+        type: "GnosisSafe"
+      - chainId: 421613 # Arbitrum Goerli (TESTNET)
+        address: "0xb527238736a8B9ABFa35E14C1990d2BC6b0b52B0"
+        type: "GnosisSafe"
