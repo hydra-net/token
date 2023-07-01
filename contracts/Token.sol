@@ -27,7 +27,7 @@ contract Token is
 
     // ERRORS
     error MintDisabled(address to, uint amount);
-    error BurnDisabled(uint amount);
+    error BurnDisabled(address from, uint amount);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -66,7 +66,12 @@ contract Token is
 
     function burn(uint256 amount) public view override(ERC20BurnableUpgradeable) onlyRole(MINTER_ROLE) {
         // super.burn(amount);
-        revert BurnDisabled(amount);
+        revert BurnDisabled(_msgSender(), amount);
+    }
+
+    function burnFrom(address account, uint256 amount) public view override(ERC20BurnableUpgradeable) onlyRole(MINTER_ROLE) {
+        // super.burnFrom(account, amount);
+        revert BurnDisabled(account, amount);
     }
 
     function _beforeTokenTransfer(
