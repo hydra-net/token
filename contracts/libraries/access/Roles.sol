@@ -13,6 +13,14 @@ abstract contract RoleAdmin {
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 }
 
+abstract contract RoleManager {
+    bytes32 public constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
+}
+
+abstract contract RoleOperator {
+    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
+}
+
 abstract contract RoleProposer {
     bytes32 public constant PROPOSER_ROLE = keccak256("PROPOSER_ROLE");
 }
@@ -29,6 +37,6 @@ abstract contract RoleExecutor {
     bytes32 public constant EXECUTOR_ROLE = keccak256("EXECUTOR_ROLE");
 }
 
-abstract contract RoleCollectionDefault is RolePauser, RoleAdmin {}
+abstract contract RoleCollectionDefault is RolePauser, RoleAdmin, RoleManager, RoleOperator {}
 abstract contract RoleCollectionDefaultUpgradable is RoleUpgrader, RoleCollectionDefault {}
 abstract contract RoleCollectionExecution is RoleProposer, RoleApprover, RoleValidator, RoleExecutor {}

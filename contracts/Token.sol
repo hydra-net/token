@@ -59,17 +59,17 @@ contract Token is
         _unpause();
     }
 
-    function mint(address to, uint256 amount) public view onlyRole(MINTER_ROLE) {
+    function mint(address to, uint256 amount) public virtual onlyRole(MINTER_ROLE) {
         // _mint(to, amount);
         revert MintDisabled(to, amount);
     }
 
-    function burn(uint256 amount) public view override(ERC20BurnableUpgradeable) onlyRole(MINTER_ROLE) {
+    function burn(uint256 amount) public virtual override(ERC20BurnableUpgradeable) onlyRole(MINTER_ROLE) {
         // super.burn(amount);
         revert BurnDisabled(_msgSender(), amount);
     }
 
-    function burnFrom(address account, uint256 amount) public view override(ERC20BurnableUpgradeable) onlyRole(MINTER_ROLE) {
+    function burnFrom(address account, uint256 amount) public virtual override(ERC20BurnableUpgradeable) onlyRole(MINTER_ROLE) {
         // super.burnFrom(account, amount);
         revert BurnDisabled(account, amount);
     }

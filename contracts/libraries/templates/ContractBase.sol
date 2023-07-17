@@ -2,13 +2,15 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlDefaultAdminRulesUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 
-import "./Roles.sol";
+
+import "../access/AccessControlElevation.sol";
+import "../access/Roles.sol";
 
 abstract contract AbstractContract {
     ////// INTERNAL //////
@@ -35,29 +37,16 @@ abstract contract BaseContract is AbstractContract {
 abstract contract BaseUpgradableContract is
     AbstractContract,
     Initializable,
+    ERC165Upgradeable,
     UUPSUpgradeable,
     PausableUpgradeable,
-    AccessControlUpgradeable,
     AccessControlEnumerableUpgradeable,
     AccessControlDefaultAdminRulesUpgradeable,
+    AccessControlElevation,
     RoleCollectionDefaultUpgradable
 {
     // CONST
     uint48 private constant DEFAULT_ADMIN_DELAY = 3 * 24 * 60 * 60; // 3 days
-
-    ////// CONVENIENCE OVERRIDES //////
-
-    /**
-     * @notice Convenience override method if you only need a single initializer.
-     * 
-     * Use the 'initializer' keyword if you need multiple.
-     * See: https://docs.openzeppelin.com/upgrades-plugins/1.x/writing-upgradeable#initializers
-     * 
-     * @param admin Address of initial admin account (can and should be multi-sig)
-     */
-    // function _initialize(address admin) internal virtual {}
-
-    ////// INTERNAL //////
 
     /// INITIALIZATION ///
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -65,6 +54,17 @@ abstract contract BaseUpgradableContract is
         _disableInitializers();
     }
 
+    /**
+     * @notice Initializer for parent contracts. Should be called via super._initialize() in child contracts.
+     * 
+     * IMPORTANT: The initializer has to be called to activate the contract. Nothing else works until initialization.
+     * IMPORTANT: Never call any initializer twice. Use new initializer functions for upgrades instead.
+     * 
+     * To create additional initializer functions use the 'initializer' keyword.
+     * See: https://docs.openzeppelin.com/upgrades-plugins/1.x/writing-upgradeable#initializers
+     * 
+     * @param admin Address of initial admin account (can and should be multi-sig)
+     */
     function __BaseContract_init(address admin) internal onlyInitializing {
         __UUPSUpgradeable_init();
         __Pausable_init();
@@ -76,17 +76,35 @@ abstract contract BaseUpgradableContract is
         _ensureRole(PAUSER_ROLE, admin);
         _ensureRole(UPGRADER_ROLE, admin);
         _ensureRole(ADMIN_ROLE, admin);
+        _ensureRoleAdmin(ADMIN_ROLE, ADMIN_ROLE);
+        _ensureRoleAdmin(MANAGER_ROLE, ADMIN_ROLE);
+        _ensureRoleAdmin(OPERATOR_ROLE, MANAGER_ROLE);
     }
 
     /// CONVENIENCE ///
+
     function _ensureRole(bytes32 role, address account) internal {
         if (!hasRole(role, account)) {
             _grantRole(role, account);
         }
     }
 
+    function _ensureRoleAdmin(bytes32 role, bytes32 adminRole) internal {
+        if (getRoleAdmin(role) != adminRole) {
+            _setRoleAdmin(role, adminRole);
+        }
+    }
+
     /// OZ OVERRIDES ///
     // The following functions are overrides required by Solidity.
+
+    function _authorizeUpgrade(
+        address newImplementation
+    ) internal virtual override onlyRole(UPGRADER_ROLE) {}
+
+    function _checkRole(bytes32 role) internal view virtual override(AccessControlUpgradeable, AccessControlElevation) {
+        super._checkRole(role);
+    }
 
     function grantRole(
         bytes32 role,
@@ -187,24 +205,23 @@ abstract contract BaseUpgradableContract is
         view
         virtual
         override(
-            AccessControlUpgradeable,
+            ERC165Upgradeable,
             AccessControlDefaultAdminRulesUpgradeable,
-            AccessControlEnumerableUpgradeable
+            AccessControlEnumerableUpgradeable,
+            AccessControlElevation
         )
         returns (bool)
     {
         return
-            interfaceId ==
-            type(IAccessControlDefaultAdminRulesUpgradeable).interfaceId ||
-            interfaceId ==
-            type(IAccessControlEnumerableUpgradeable).interfaceId ||
             super.supportsInterface(interfaceId);
     }
+
+    ////// INTERNAL //////
 
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[49] private __gap;
+    uint256[50] private __gap;
 }
