@@ -34,7 +34,7 @@ abstract contract BaseContract is AbstractContract {
     uint256[50] private __gap;
 }
 
-abstract contract BaseUpgradableContract is
+abstract contract ContractUpgradable is
     AbstractContract,
     Initializable,
     ERC165Upgradeable,
@@ -65,7 +65,7 @@ abstract contract BaseUpgradableContract is
      * 
      * @param admin Address of initial admin account (can and should be multi-sig)
      */
-    function __BaseContract_init(address admin) internal onlyInitializing {
+    function __BaseContract_init(address admin) internal virtual onlyInitializing {
         __UUPSUpgradeable_init();
         __Pausable_init();
         __AccessControl_init();
@@ -77,8 +77,6 @@ abstract contract BaseUpgradableContract is
         _ensureRole(UPGRADER_ROLE, admin);
         _ensureRole(ADMIN_ROLE, admin);
         _ensureRoleAdmin(ADMIN_ROLE, ADMIN_ROLE);
-        _ensureRoleAdmin(MANAGER_ROLE, ADMIN_ROLE);
-        _ensureRoleAdmin(OPERATOR_ROLE, MANAGER_ROLE);
     }
 
     /// CONVENIENCE ///
@@ -214,6 +212,40 @@ abstract contract BaseUpgradableContract is
     {
         return
             super.supportsInterface(interfaceId);
+    }
+
+    ////// INTERNAL //////
+
+    /**
+     * @dev This empty reserved space is put in place to allow future versions to add new
+     * variables without shifting down storage in the inheritance chain.
+     * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
+     */
+    uint256[50] private __gap;
+}
+
+abstract contract ContractUpgradableDelegatable is ContractUpgradable, RoleCollectionDelegation {
+    /// INITIALIZATION ///
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
+    /**
+     * @notice Initializer for parent contracts. Should be called via super._initialize() in child contracts.
+     * 
+     * IMPORTANT: The initializer has to be called to activate the contract. Nothing else works until initialization.
+     * IMPORTANT: Never call any initializer twice. Use new initializer functions for upgrades instead.
+     * 
+     * To create additional initializer functions use the 'initializer' keyword.
+     * See: https://docs.openzeppelin.com/upgrades-plugins/1.x/writing-upgradeable#initializers
+     * 
+     * @param admin Address of initial admin account (can and should be multi-sig)
+     */
+    function __BaseContract_init(address admin) internal virtual override onlyInitializing {
+        super.__BaseContract_init(admin);
+        _ensureRoleAdmin(MANAGER_ROLE, ADMIN_ROLE);
+        _ensureRoleAdmin(OPERATOR_ROLE, MANAGER_ROLE);
     }
 
     ////// INTERNAL //////
