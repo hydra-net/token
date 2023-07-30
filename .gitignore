@@ -1,6 +1,8 @@
 # Local Dev
-/.tmp
+.tmp
 .env
+*.vars
+build/
 
 # SC Development
 node_modules

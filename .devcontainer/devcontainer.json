@@ -1,37 +1,39 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
-// https://github.com/microsoft/vscode-dev-containers/tree/v0.241.1/containers/typescript-node
+// For format details, see https://aka.ms/devcontainer.json.
 {
-	"name": "HN Solidity",
+	"name": "Bungabunga",
 	"build": {
+		"target": "ghcr.io/hydra-net/devcontainer/bungabunga",
 		"dockerfile": "Dockerfile",
-		// Update 'VARIANT' to pick a Node version: 18, 16, 14.
-		// Append -bullseye or -buster to pin to an OS version.
-		// Use -bullseye variants on local on arm64/Apple Silicon.
 		"args": { 
-			"VARIANT": "18-bullseye"
+			"DVC_OS_RELEASE": "bookworm",
+			"DVC_ARCH": "arm",
+			"DVC_NODE": "20",
+			"DVC_RUST": "1.70.0",
+			"DVC_GCLOUD": "438.0.0",
+			"DVC_AWSCLI": ""
 		}
 	},
-
-	// Configure tool-specific properties.
+	"mounts": [{
+		"source": "${localEnv:HOME}/.devcontainer/bungabunga",
+		"target": "/home/code",
+		"type": "bind"
+	}],
 	"customizations": {
-		// Configure properties specific to VS Code.
 		"vscode": {
-			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
-				"dbaeumer.vscode-eslint",
+				"ms-vscode.test-adapter-converter",
 				"eamodio.gitlens",
+				"yzhang.markdown-all-in-one",
+				"googlecloudtools.cloudcode",
+				"dbaeumer.vscode-eslint",
 				"NomicFoundation.hardhat-solidity",
+				"hbenl.vscode-test-explorer",
 				"hbenl.vscode-mocha-test-adapter",
+				"rust-lang.rust-analyzer"
 			]
 		}
 	},
-
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"postCreateCommand": "export NODE_OPTIONS=--openssl-legacy-provider && /opt/entrypoint/init.sh",
+	"remoteUser": "code"
 	// "forwardPorts": [],
-
-	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "export NODE_OPTIONS=--openssl-legacy-provider",
-
-	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
-	"remoteUser": "node"
 }
