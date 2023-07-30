@@ -37,6 +37,7 @@ abstract contract RoleExecutor {
     bytes32 public constant EXECUTOR_ROLE = keccak256("EXECUTOR_ROLE");
 }
 
-abstract contract RoleCollectionDefault is RolePauser, RoleAdmin, RoleManager, RoleOperator {}
+abstract contract RoleCollectionDefault is RolePauser, RoleAdmin {}
 abstract contract RoleCollectionDefaultUpgradable is RoleUpgrader, RoleCollectionDefault {}
+abstract contract RoleCollectionDelegation is RoleManager, RoleOperator {}
 abstract contract RoleCollectionExecution is RoleProposer, RoleApprover, RoleValidator, RoleExecutor {}
