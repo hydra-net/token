@@ -15,6 +15,11 @@ typechain-types
 cache
 artifacts
 
+# Foundry
+cache_forge/
+out/
+
+
 # Tenderly
 /deployments/tenderly
 
