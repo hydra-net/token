@@ -2,7 +2,7 @@
 pragma solidity ^0.8.9;
 
 import "forge-std/Test.sol";
-import "@et/contracts/Test.sol";
+import "./Utils.sol";
 import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import "../contracts/testnet/TwistedWETH.sol";
 import "../contracts/Treasury.sol";
@@ -94,4 +94,3 @@ contract BondageTest is Test {
     ////// FUZZING //////
 
 }
-

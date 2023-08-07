@@ -77,7 +77,7 @@ contract Treasury is ContractUpgradableDelegatable {
         address token,
         address spender,
         uint256 amount
-    ) public onlyRole(OPERATOR_ROLE) {
+    ) public onlyRole(OPERATOR_ROLE) returns (bool) {
         uint256 bal = IERC20(token).balanceOf(address(this));
         if (bal < amount) {
             revert InsufficientBalance(token, bal, amount);
@@ -93,13 +93,14 @@ contract Treasury is ContractUpgradableDelegatable {
         }
         _allowances.set(ix, amount);
         emit AllowanceApproved(_msgSender(), operation, token, spender, amount);
+        return true;
     }
 
     function revoke(
         bytes32 operation,
         address token,
         address spender
-    ) public onlyRole(OPERATOR_ROLE) {
+    ) public onlyRole(OPERATOR_ROLE) returns (bool) {
         uint256 ix = _index.ix[operation][token][spender];
         if (ix == 0) {
             revert InsufficientAllowance(operation, token, spender, 0, 0);
@@ -114,9 +115,10 @@ contract Treasury is ContractUpgradableDelegatable {
         delete _index.token[ix];
         delete _index.spender[ix];
         emit AllowanceRevoked(_msgSender(), operation, token, spender);
+        return true;
     }
 
-    function withdraw(bytes32 operation, address token, uint amount) public {
+    function withdraw(bytes32 operation, address token, uint amount) public returns (bool) {
         IERC20 _token = IERC20(token);
         uint256 _balance = _token.balanceOf(address(this));
         uint256 ix = _index.ix[operation][token][_msgSender()];
@@ -160,9 +162,20 @@ contract Treasury is ContractUpgradableDelegatable {
         // Process withdrawal
         _token.transfer(_msgSender(), amount);
         emit Withdrawal(_msgSender(), operation, token, amount);
+        return true;
     }
 
     ////// PUBLIC VIEWS //////
+
+    function allowance(bytes32 operation, address token) public view returns (uint256) {
+        return allowance(operation, token, _msgSender());
+    }
+
+    function allowance(bytes32 operation, address token, address spender) public view returns (uint256) {
+        uint256 ix = _index.ix[operation][token][spender];
+        if (ix == 0) return 0;
+        return _allowances.get(ix);
+    }
 
     function allowance(uint256 ix) public view returns (uint256) {
         return _allowances.get(ix);
@@ -170,12 +183,13 @@ contract Treasury is ContractUpgradableDelegatable {
 
     function allowances() public view returns (Allowance[] memory) {
         Allowance[] memory alls = new Allowance[](_allowances.length());
-        for (uint i = 1; i <= _allowances.length(); i++) {
-            alls[i - 1] = Allowance(
-                _index.operation[i],
-                _index.token[i],
-                _index.spender[i],
-                _allowances.get(i)
+        for (uint i = 0; i < _allowances.length(); i++) {
+            (uint256 ix, uint256 val) = _allowances.at(i);
+            alls[i] = Allowance(
+                _index.operation[ix],
+                _index.token[ix],
+                _index.spender[ix],
+                val
             );
         }
         return alls;
