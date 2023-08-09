@@ -99,12 +99,12 @@ RUN su ${DVC_USER} -c "source /usr/local/share/nvm/nvm.sh && nvm install ${DVC_N
 # TODO #
 
 ## Google Cloud
-RUN mkdir -p /opt/google-cloud-sdk && chown ${DVC_USER}:${DVC_GROUP} /opt/google-cloud-sdk
-RUN su ${DVC_USER} -c "cd /opt &&\
+RUN mkdir -p /opt/gcloud/google-cloud-sdk && chown -R ${DVC_USER}:${DVC_GROUP} /opt/gcloud
+RUN su ${DVC_USER} -c "cd /opt/gcloud &&\
     curl https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-${DVC_GCLOUD}-${DVC_OS}-${DVC_ARCH}.tar.gz \
     | tar xvz -- &&\
     cd ~ &&\
-    ln -s /opt/google-cloud-sdk google-cloud-sdk &&\
+    ln -s /opt/gcloud/google-cloud-sdk google-cloud-sdk &&\
     ./google-cloud-sdk/install.sh -q --usage-reporting false"
 
 ## Cloudflare
@@ -129,12 +129,14 @@ RUN curl https://raw.githubusercontent.com/Tenderly/tenderly-cli/master/scripts/
 ############################
 
 # Init script and default home dir
-COPY files/init.sh /opt/entrypoint/init.sh
-RUN export INIT_HOME=/opt/entrypoint/home &&\
+ENV INIT_HOME=/opt/entrypoint/home
+RUN mkdir -p ${INIT_HOME} &&\
     cp -r ${DVC_HOME} ${INIT_HOME} &&\
-    cp -r /home/node/.oh-my-zsh ${INIT_HOME}/ &&\
-    cp /home/node/.zshrc ${INIT_HOME}/ &&\
-    chgrp -R ${DVC_GROUP} ${INIT_HOME}
+    cp -r /home/node/.oh-my-zsh ${INIT_HOME}
+COPY files/init.sh /opt/entrypoint/init.sh
+COPY files/.zshrc /opt/entrypoint/home/.zshrc
+COPY files/.bashrc /opt/entrypoint/home/.bashrc
+RUN chgrp -R ${DVC_GROUP} ${INIT_HOME}
 
 # su ${DVC_USER}
 USER ${DVC_USER}
