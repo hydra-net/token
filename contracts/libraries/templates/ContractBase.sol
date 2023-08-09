@@ -93,6 +93,16 @@ abstract contract ContractUpgradable is
         }
     }
 
+    /// OZ INTERFACE ///
+
+    function pause() public onlyRole(PAUSER_ROLE) {
+        _pause();
+    }
+
+    function unpause() public onlyRole(PAUSER_ROLE) {
+        _unpause();
+    }
+
     /// OZ OVERRIDES ///
     // The following functions are overrides required by Solidity.
 
