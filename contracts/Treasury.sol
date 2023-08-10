@@ -61,6 +61,8 @@ contract Treasury is ContractUpgradableDelegatable {
         mapping(uint256 => address) spender;
     }
 
+    ////// INITIALIZATION //////
+
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();

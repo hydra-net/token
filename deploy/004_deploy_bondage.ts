@@ -56,9 +56,20 @@ const df: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
         })
     })
     log.info("Configured RBAC for BONDS_MANAGER")
+
+    // Add to reserved accounts in Info Contract
+    const InfoDeployment = await deployments.get("Info")
+    if (!InfoDeployment) {
+        log.warn("Info contract deployment not found, manually add bondage contract to reserved accounts")
+        return
+    }
+    const Info = await InfoDeployment.connect<Contracts.Info>(deployer)
+    log.info("Adding bondage contract to reserved accounts")
+    await Info.addReservedAccount(Contract.address);
+    log.info("Successfully added bondage contract to reserved accounts")
 }
 
-df.dependencies = ["token", "treasury"];
+df.dependencies = ["token", "treasury", "info"];
 df.tags = ["Bondage.sol", "Bondage", "bondage", "bonds"]
 
 export default df
