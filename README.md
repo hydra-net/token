@@ -7,6 +7,7 @@ Based on ERC-20 standard and implemented using OpenZeppelin Contract Library.
 ### Mainnet (Arbitrum One)
 #### Contracts
 * **HDN Token** [0x3404149e9EE6f17Fb41DB1Ce593ee48FBDcD9506](https://arbiscan.io/address/0x3404149e9EE6f17Fb41DB1Ce593ee48FBDcD9506)
+* **DAO Info** [0xtodo](https://arbiscan.io/address/)
 * **Treasury** [0x3a9104CF804039EaD55E987556f3E647875FBe15](https://arbiscan.io/address/0x3a9104CF804039EaD55E987556f3E647875FBe15)
 * **Bonds** [0x15740F6057b5427C2155FdA85ed5E9AaAb3bF3e7](https://arbiscan.io/address/0x15740F6057b5427C2155FdA85ed5E9AaAb3bF3e7)
 
@@ -16,6 +17,7 @@ Based on ERC-20 standard and implemented using OpenZeppelin Contract Library.
 ### Testnet (Arbitrum Goerli)
 #### Contracts
 * **HDN Token** [0xC59DA616B7f3De41D7EA4D02F95abAF7C77b9D0A](https://goerli.arbiscan.io/address/0xC59DA616B7f3De41D7EA4D02F95abAF7C77b9D0A)
+* **DAO Info** [0x67635527C0a8D872AD6c1b7E9c3d53a771FAe3e5](https://goerli.arbiscan.io/address/0x67635527C0a8D872AD6c1b7E9c3d53a771FAe3e5)
 * **Treasury** [0x56CDBdd6c4577De978c131C658a3934f93298920](https://goerli.arbiscan.io/address/0x56CDBdd6c4577De978c131C658a3934f93298920)
 * **Bonds** [0xc7e1D8c2d53D74346cD92D97299E3505B25908b1](https://goerli.arbiscan.io/address/0xc7e1D8c2d53D74346cD92D97299E3505B25908b1)
 
