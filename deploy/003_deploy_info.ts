@@ -47,7 +47,7 @@ const df: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     const Contract = await Deployment.connect(deployer)
 }
 
-df.dependencies = ["token", "treasury"];
+df.dependencies = ["token", "treasury"]
 df.tags = ["Info.sol", "Info", "info"]
 
 export default df

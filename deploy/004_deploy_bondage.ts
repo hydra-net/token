@@ -69,7 +69,7 @@ const df: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     log.info("Successfully added bondage contract to reserved accounts")
 }
 
-df.dependencies = ["token", "treasury", "info"];
+df.dependencies = ["token", "treasury", "info"]
 df.tags = ["Bondage.sol", "Bondage", "bondage", "bonds"]
 
 export default df
