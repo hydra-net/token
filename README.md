@@ -7,7 +7,7 @@ Based on ERC-20 standard and implemented using OpenZeppelin Contract Library.
 ### Mainnet (Arbitrum One)
 #### Contracts
 * **HDN Token** [0x3404149e9EE6f17Fb41DB1Ce593ee48FBDcD9506](https://arbiscan.io/address/0x3404149e9EE6f17Fb41DB1Ce593ee48FBDcD9506)
-* **DAO Info** [0xtodo](https://arbiscan.io/address/)
+* **DAO Info** [0x84e91FDD4cfb22d4266f8Be309e8C4E2f9f24fcB](https://arbiscan.io/address/0x84e91FDD4cfb22d4266f8Be309e8C4E2f9f24fcB)
 * **Treasury** [0x3a9104CF804039EaD55E987556f3E647875FBe15](https://arbiscan.io/address/0x3a9104CF804039EaD55E987556f3E647875FBe15)
 * **Bonds** [0x15740F6057b5427C2155FdA85ed5E9AaAb3bF3e7](https://arbiscan.io/address/0x15740F6057b5427C2155FdA85ed5E9AaAb3bF3e7)
 
