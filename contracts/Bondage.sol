@@ -228,13 +228,12 @@ contract Bondage is ContractUpgradableDelegatable, ReentrancyGuardUpgradeable {
 
     // BONDS MANAGER VIEWS //
 
-    function bondSaleViewStaging() public view onlyRole(OPERATOR_ROLE) {
-        // Yes, we know anyone can get around the onlyRole modifier on a view.
-        // It's only restricted to not confuse users
-        // interacting with public views through e.g. block explorers.
+    function bondSaleViewStaging() public view returns (BondMarket[] memory) {
         if (_bondMarkets.live == 1) {
             revert BondSaleActive();
         }
+
+        return _viewActiveMarkets();
     }
 
     //// PUBLIC VIEW FUNCTIONS ////
