@@ -23,6 +23,7 @@ contract Bondage is ContractUpgradableDelegatable, ReentrancyGuardUpgradeable {
     Treasury private _treasury;
     BondMap private _maturingBonds;
     BondMarketMap private _bondMarkets;
+    uint256 private _startTimestamp;
 
     // EVENTS
     event BondMarketCreated(BondMarket market);
@@ -208,11 +209,12 @@ contract Bondage is ContractUpgradableDelegatable, ReentrancyGuardUpgradeable {
         if (_bondMarkets.live == 1) {
             revert BondSaleActive();
         }
-        _bondMarkets.live = 1;
         for (uint i = 0; i < _bondMarkets.ids.length(); i++) {
             uint id = _bondMarkets.ids.at(i);
             emit BondMarketOpened(_bondMarkets.markets[id]);
         }
+        _bondMarkets.live = 1;
+        _startTimestamp = block.timestamp;
     }
 
     function bondSaleClose() public onlyRole(OPERATOR_ROLE) {
@@ -224,6 +226,7 @@ contract Bondage is ContractUpgradableDelegatable, ReentrancyGuardUpgradeable {
             _closeBondMarket(id);
         }
         _bondMarkets.live = 0;
+        _startTimestamp = 0;
     }
 
     // BONDS MANAGER VIEWS //
@@ -293,6 +296,11 @@ contract Bondage is ContractUpgradableDelegatable, ReentrancyGuardUpgradeable {
         }
         return overdueBonds;
     }
+
+    function bondSaleStartDate() public view returns (uint256) {
+        return _startTimestamp;
+    }
+
 
     ////// INTERNAL //////
 
