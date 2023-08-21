@@ -10,6 +10,8 @@ contract Treasury is ContractUpgradableDelegatable {
     using EnumerableMapUpgradeable for EnumerableMapUpgradeable.UintToUintMap;
 
     // OPERATIONS
+    bytes32 public constant OP_NULL = 0x00;
+    bytes32 public constant OP_ADMIN = keccak256("ADMIN_OPERATION");
     bytes32 public constant OP_BONDS = keccak256("BONDS_OPERATION");
 
     // STATE
