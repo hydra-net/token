@@ -164,7 +164,8 @@ contract Bondage is ContractUpgradableDelegatable, ReentrancyGuardUpgradeable {
     }
 
     function claimBonds(uint[] calldata bondIds) public nonReentrant {
-        for (uint i = 0; i < bondIds.length; i++) {
+        uint mi = bondIds.length;
+        for (uint i = 0; i < mi; i++) {
             _claimBond(bondIds[i]);
         }
     }
@@ -184,8 +185,8 @@ contract Bondage is ContractUpgradableDelegatable, ReentrancyGuardUpgradeable {
         }
 
         if (_bondMarkets.ids.length() > 0) {
-            for (uint i = 0; i < _bondMarkets.ids.length(); i++) {
-                uint id = _bondMarkets.ids.at(i);
+            for ( ; _bondMarkets.ids.length(); ) { // as length is dynamic, this will go to zero
+                uint id = _bondMarkets.ids.at(0);
                 emit BondMarketDeleted(_bondMarkets.markets[id]);
                 delete _bondMarkets.markets[id];
                 _bondMarkets.ids.remove(id);
@@ -209,7 +210,8 @@ contract Bondage is ContractUpgradableDelegatable, ReentrancyGuardUpgradeable {
         if (_bondMarkets.live == 1) {
             revert BondSaleActive();
         }
-        for (uint i = 0; i < _bondMarkets.ids.length(); i++) {
+        uint mi = _bondMarkets.ids.length();
+        for (uint i = 0; i < mi; i++) {
             uint id = _bondMarkets.ids.at(i);
             emit BondMarketOpened(_bondMarkets.markets[id]);
         }
@@ -221,8 +223,8 @@ contract Bondage is ContractUpgradableDelegatable, ReentrancyGuardUpgradeable {
         if (_bondMarkets.live != 1) {
             revert BondSaleNotActive();
         }
-        for (uint i = 0; i < _bondMarkets.ids.length(); i++) {
-            uint id = _bondMarkets.ids.at(i);
+        for ( ; _bondMarkets.ids.length(); ) { // as length is dynamic, this will go to zero
+            uint id = _bondMarkets.ids.at(0);
             _closeBondMarket(id);
         }
         _bondMarkets.live = 0;
@@ -251,7 +253,8 @@ contract Bondage is ContractUpgradableDelegatable, ReentrancyGuardUpgradeable {
 
     function maturingBonds(address owner) public view returns (Bond[] memory) {
         Bond[] memory bonds = new Bond[](_maturingBonds.index[owner].length);
-        for (uint i = 0; i < _maturingBonds.index[owner].length; i++) {
+        uint mi = _maturingBonds.index[owner].length;
+        for (uint i = 0; i < mi; i++) {
             bonds[i] = _maturingBonds.bonds[_maturingBonds.index[owner][i]];
         }
         return bonds;
@@ -260,15 +263,19 @@ contract Bondage is ContractUpgradableDelegatable, ReentrancyGuardUpgradeable {
     function allMaturingBonds() public view returns (Bond[] memory) {
         // Determine num. of bonds
         uint length = 0;
-        for (uint i = 0; i < _maturingBonds.addresses.length(); i++) {
+        uint mi = _maturingBonds.addresses.length();
+        uint mj = 0;
+        for (uint i = 0; i < mi; i++) {
             address owner = _maturingBonds.addresses.at(i);
             length += _maturingBonds.index[owner].length;
         }
         Bond[] memory bonds = new Bond[](length);
         uint ix = 0;
-        for (uint i = 0; i < _maturingBonds.addresses.length(); i++) {
+        mi = _maturingBonds.addresses.length();
+        for (uint i = 0; i < mi; i++) {
             address owner = _maturingBonds.addresses.at(i);
-            for (uint j = 0; j < _maturingBonds.index[owner].length; j++) {
+            mj = _maturingBonds.index[owner].length;
+            for (uint j = 0; j < mj; j++) {
                 bonds[ix] = _maturingBonds.bonds[
                     _maturingBonds.index[owner][j]
                 ];
@@ -281,14 +288,15 @@ contract Bondage is ContractUpgradableDelegatable, ReentrancyGuardUpgradeable {
     function claimableBonds() public view returns (Bond[] memory) {
         Bond[] memory bonds = allMaturingBonds();
         uint length = 0;
-        for (uint i = 0; i < bonds.length; i++) {
+        uint mi = bonds.length;
+        for (uint i = 0; i < mi; i++) {
             if (bonds[i].maturation < block.timestamp) {
                 length++;
             }
         }
         Bond[] memory overdueBonds = new Bond[](length);
         uint ix = 0;
-        for (uint i = 0; i < bonds.length; i++) {
+        for (uint i = 0; i < mi; i++) {
             if (bonds[i].maturation < block.timestamp) {
                 overdueBonds[ix] = bonds[i];
                 ix++;
@@ -400,10 +408,9 @@ contract Bondage is ContractUpgradableDelegatable, ReentrancyGuardUpgradeable {
     ////// INTERNAL VIEWS //////
 
     function _viewActiveMarkets() internal view returns (BondMarket[] memory) {
-        BondMarket[] memory markets = new BondMarket[](
-            _bondMarkets.ids.length()
-        );
-        for (uint i = 0; i < _bondMarkets.ids.length(); i++) {
+        uint mi = _bondMarkets.ids.length();
+        BondMarket[] memory markets = new BondMarket[](mi);
+        for (uint i = 0; i < mi; i++) {
             markets[i] = _bondMarkets.markets[_bondMarkets.ids.at(i)];
         }
         return markets;
