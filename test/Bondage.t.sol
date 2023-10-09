@@ -239,3 +239,83 @@ contract BondageTestClaim is Test {
     }
 }
 
+
+
+contract BondageTestCloseSale is Test {
+    // Test Utils
+    User u;
+
+    // Testnet Contracts
+    TwistedWETH weth1;
+    TwistedWETH weth2;
+    TwistedWETH weth3;
+
+    // Contracts under Test
+    Token token;
+    Treasury treasury;
+    Bondage bondage;
+
+    function setUp() public {
+        u = new User();
+
+        weth1 = new TwistedWETH();
+        weth2 = new TwistedWETH();
+        weth3 = new TwistedWETH();
+
+        vm.startPrank(u.Admin());
+        treasury = Treasury(address(new ERC1967Proxy(address(new Treasury()), "")));
+        treasury.initialize(u.Admin());
+        treasury.grantRole(treasury.MANAGER_ROLE(), u.Admin());
+        treasury.grantRole(treasury.OPERATOR_ROLE(), u.Admin());
+        token = Token(address(new ERC1967Proxy(address(new Token()), "")));
+        token.initialize(u.Admin(), address(treasury));
+        bondage = Bondage(address(new ERC1967Proxy(address(new Bondage()), "")));
+        bondage.initialize(u.Admin(), address(token), address(treasury));
+        bondage.grantRole(bondage.MANAGER_ROLE(), u.Manager());
+        vm.stopPrank();
+
+        vm.startPrank(u.Manager());
+        bondage.grantRole(bondage.OPERATOR_ROLE(), u.Operator());
+        vm.stopPrank();
+
+        vm.startPrank(u.Nobody());
+        weth1.feedMe(100 ether);
+        vm.stopPrank();
+
+        // Approve bond budget
+        vm.startPrank(u.Admin());
+        treasury.approve(treasury.OP_BONDS(), address(token), address(bondage), 30000 ether);
+        vm.stopPrank();
+
+        // Create bond sale
+        vm.startPrank(u.Operator()); // BONDS_MANAGER
+        bondage.bondSaleNew();
+        bondage.bondSaleAdd(address(weth1), 5000000 gwei, 1, 10000 ether);
+        bondage.bondSaleAdd(address(weth2), 5000000 gwei, 1, 10000 ether);
+        bondage.bondSaleAdd(address(weth3), 5000000 gwei, 1, 10000 ether);
+        bondage.bondSaleStart();
+        vm.stopPrank();
+    }
+
+    function test_bondSaleClose_Empty() external {
+        // Check initial balances
+        assertEq(token.balanceOf(address(bondage)), 30000 ether);
+        uint256 balance = token.balanceOf(address(treasury));
+
+
+        // Close bond sale
+        vm.startPrank(u.Operator()); // BONDS_MANAGER
+        bondage.bondSaleClose();
+        vm.stopPrank();
+
+        // Check Balances
+        assertEq(token.balanceOf(address(bondage)), 0 ether);
+        assertEq(token.balanceOf(address(treasury)), balance + 30000 ether);
+
+        // // Check open bonds
+        assertEq(bondage.activeMarkets().length, 0, "activeMarkets > 0");
+        assertEq(bondage.bondSaleViewStaging().length, 0, "bondSaleViewStaging > 0");
+    }
+}
+
+

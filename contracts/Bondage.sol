@@ -221,9 +221,9 @@ contract Bondage is ContractUpgradableDelegatable, ReentrancyGuardUpgradeable {
         if (_bondMarkets.live != 1) {
             revert BondSaleNotActive();
         }
-        for (uint i = 0; i < _bondMarkets.ids.length(); i++) {
-            uint id = _bondMarkets.ids.at(i);
-            _closeBondMarket(id);
+        uint[] memory activeMarketsIx = _bondMarkets.ids.values();
+        for (uint i = 0; i < activeMarketsIx.length; i++) {
+            _closeBondMarket(activeMarketsIx[i]);
         }
         _bondMarkets.live = 0;
         _startTimestamp = 0;
