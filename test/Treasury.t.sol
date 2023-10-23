@@ -2,8 +2,10 @@
 pragma solidity ^0.8.9;
 
 import "forge-std/Test.sol";
+import "forge-std/console.sol";
 import "./Utils.sol";
 import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import "../contracts/testnet/TwistedWETH.sol";
 import "../contracts/Treasury.sol";
 import "../contracts/Token.sol";
 
@@ -14,6 +16,9 @@ contract TreasuryTest is Test {
     // Test Utils
     User u;
 
+    // Testnet Contracts
+    TwistedWETH weth;
+
     // Contracts under Test
     Token _token;
     Treasury _treasury;
@@ -21,6 +26,8 @@ contract TreasuryTest is Test {
 
     function setUp() public {
         u = new User();
+        weth = new TwistedWETH();
+
         vm.startPrank(u.Admin());
         _treasury = Treasury(
             address(new ERC1967Proxy(address(new Treasury()), ""))
@@ -90,6 +97,42 @@ contract TreasuryTest is Test {
         vm.stopPrank();
         assertEq(allowanceBefore - amount, allowanceAfter);
     }
+
+    /// SOURCEHAT AUDIT Finding #1: Avoid accidental approval overwrite ///
+    function test_approve_multiple_withdraw() external {
+        // Test 2 different operations
+        bytes32 opAdmin = _treasury.OP_ADMIN();
+        bytes32 opBonds = _treasury.OP_BONDS();
+        uint256 amount1 = TEST_AMOUNT / 2;
+        uint256 amount2 = TEST_AMOUNT - amount1;
+
+        vm.startPrank(u.Operator());
+        weth.feedMe(3);
+        IERC20(address(weth)).transfer(address(_treasury), 3);
+        _treasury.approve(opBonds, address(_token), u.Withdrawer(), amount1);
+        _treasury.approve(opBonds, address(weth), u.Withdrawer(), 1);
+        _treasury.approve(opAdmin, address(weth), u.Withdrawer(), 2);
+        vm.stopPrank();
+
+        // Withdraw TEST_AMOUNT completely to trigger deletion of allowance
+        vm.startPrank(u.Withdrawer());
+        _treasury.withdraw(opBonds, address(_token), amount1);
+        vm.stopPrank();
+
+        // And create new allowance to see if something is overwritten
+        vm.startPrank(u.Operator());
+        _treasury.approve(opAdmin, address(_token), u.Withdrawer(), amount2);
+        vm.stopPrank();
+
+        // Assert allowances are untouched
+        vm.startPrank(u.Withdrawer());
+        assertEq(3, _treasury.allowances().length);
+        assertEq(2, _treasury.allowance(opAdmin, address(weth)));
+        assertEq(1, _treasury.allowance(opBonds, address(weth)));
+        assertEq(amount2, _treasury.allowance(opAdmin, address(_token)));
+        vm.stopPrank();
+    }
+
 
     ////// INVARIANTS & FUZZING //////
 
