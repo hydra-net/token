@@ -1,13 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
+import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableMapUpgradeable.sol";
 import "./libraries/templates/ContractBase.sol";
 import "./interfaces/IERC20.sol";
 
 /// @custom:security-contact security@hydranet.ai
 contract Treasury is ContractUpgradableDelegatable {
+    // CONFIG
+    using CountersUpgradeable for CountersUpgradeable.Counter;
     using EnumerableMapUpgradeable for EnumerableMapUpgradeable.UintToUintMap;
+
 
     // OPERATIONS
     bytes32 public constant OP_NULL = 0x00;
@@ -17,6 +21,7 @@ contract Treasury is ContractUpgradableDelegatable {
     // STATE
     EnumerableMapUpgradeable.UintToUintMap internal _allowances;
     Index internal _index;
+    CountersUpgradeable.Counter internal _allowanceIdGen;
 
     // EVENTS
     event AllowanceApproved(
@@ -89,7 +94,9 @@ contract Treasury is ContractUpgradableDelegatable {
 
         uint256 ix = _index.ix[operation][token][spender];
         if (ix == 0) {
-            ix = _allowances.length() + 1;
+            _allowanceIdGen.increment();
+            ix = _allowanceIdGen.current();
+
             _index.ix[operation][token][spender] = ix;
             _index.operation[ix] = operation;
             _index.token[ix] = token;
